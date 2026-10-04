@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VYRO</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #0f0f1a 0%, #1a1a2e 100%);
+      min-height: 100vh;
+      padding: 20px;
+      color: #fff;
+    }
+    .container { max-width: 1000px; margin: 0 auto; }
+    
+    /* Header & Cart Button */
+    header {
+      text-align: center;
+      margin-bottom: 40px;
+      position: relative;
+    }
+    h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      background: linear-gradient(90deg, #6366f1, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 10px;
+      letter-spacing: 4px;
+    }
+    .subtitle { color: #94a3b8; font-size: 1rem; margin-top: 8px; }
+    .cart-btn {
+      position: absolute;
+      right: 0;
+      top: 10px;
+      background: linear-gradient(90deg, #6366f1, #8b5cf6);
+      border: none;
+      padding: 12px 24px;
+      border-radius: 50px;
+      color: white;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+    .cart-btn:hover { transform: scale(1.05); }
+    .cart-count {
+      background: #ef4444;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      margin-left: 8px;
+    }
+
+    /* Product Cards */
+    .product-card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 24px;
+      margin-bottom: 30px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+    .image-gallery {
+      display: flex;
+      overflow-x: auto;
+      gap: 12px;
+      padding: 20px;
+      background: rgba(255,255,255,0.03);
+    }
+    .image-gallery::-webkit-scrollbar { height: 5px; }
+    .image-gallery::-webkit-scrollbar-thumb { background: #444; border-radius: 3px; }
+    .product-img {
+      flex: 0 0 240px;
+      height: 160px;
+      border-radius: 14px;
+      overflow: hidden;
+    }
+    .product-img img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+    .product-img:hover img { transform: scale(1.05); }
+    .scroll-hint {
+      color: #6b7280;
+      font-size: 0.8rem;
+      padding: 0 25px 10px;
+    }
+    .product-info { padding: 25px; }
+    .product-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .price {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #a5b4fc;
+      margin-bottom: 14px;
+    }
+    .description {
+      color: #cbd5e1;
+      line-height: 1.6;
+      font-size: 0.95rem;
+      margin-bottom: 20px;
+    }
+    .add-btn {
+      width: 100%;
+      background: linear-gradient(90deg, #6366f1, #8b5cf6);
+      border: none;
+      padding: 14px;
+      border-radius: 12px;
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .add-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    /* Cart Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 20px;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: #1a1a2e;
+      border-radius: 24px;
+      max-width: 500px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 30px;
+    }
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 25px;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+    .cart-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+    }
+    .item-info h4 { margin-bottom: 4px; }
+    .item-info p { color: #a5b4fc; font-weight: 600; }
+    .remove-btn {
+      background: #ef4444;
+      border: none;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+    }
+    .cart-total {
+      margin-top: 20px;
+      text-align: right;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #a5b4fc;
+    }
+    .checkout-btn {
+      width: 100%;
+      background: linear-gradient(90deg, #10b981, #059669);
+      border: none;
+      padding: 16px;
+      border-radius: 12px;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 25px;
+      cursor: pointer;
+    }
+    .empty-cart {
+      text-align: center;
+      color: #6b7280;
+      padding: 30px;
+    }
+
+    /* Payment Form */
+    .payment-form { margin-top: 25px; display: none; }
+    .payment-form.active { display: block; }
+    .payment-form h3 { margin-bottom: 20px; }
+    .form-group { margin-bottom: 15px; }
+    .form-group label {
+      display: block;
+      margin-bottom: 6px;
+      color: #cbd5e1;
+      font-size: 0.9rem;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.05);
+      color: white;
+      font-size: 1rem;
+    }
+    .form-row {
+      display: flex;
+      gap: 12px;
+    }
+    .form-row .form-group { flex: 1; }
+    .submit-payment {
+      width: 100%;
+      background: linear-gradient(90deg, #10b981, #059669);
+      border: none;
+      padding: 16px;
+      border-radius: 12px;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+    .success-msg {
+      display: none;
+      text-align: center;
+      padding: 30px;
+      color: #10b981;
+    }
+    .success-msg.active { display: block; }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>VYRO</h1>
+    <button class="cart-btn" onclick="openCart()">
+      View Cart <span class="cart-count" id="cartCount">0</span>
+    </button>
+    <p class="subtitle">Curated Essentials</p>
+  </header>
+
+  <!-- PRODUCT 1: Motion Sensor Night Lights (2-Pack) -->
+  <div class="product-card">
+    <div class="image-gallery">
+      <div class="product-img">
+        <img src="https://images.unsplash.com/photo-1558089687-f2924c086c10?w=400&h=300&fit=crop" alt="Motion sensor night light">
+      </div>
+      <div class="product-img">
+        <img src="https://images.unsplash.com/photo-1503525634849-70845946f084?w=400&h=300&fit=crop" alt="Warm glow light">
+      </div>
+      <div class="product-img">
+        <img src="https://images.unsplash.com/photo-1513506003901-1e608c5f1e48?w=400&h=300&fit=crop" alt="Magnetic design">
+      </div>
+    </div>
+    <p class="scroll-hint">← Swipe for more →</p>
+    <div class="product-info">
+      <h2 class="product-title">Motion Sensor Night Lights (2-Pack)</h2>
+      <p class="price">£18.99</p>
+      <p class="description">Wood-effect finish with built-in motion detection. Easy magnetic fitting — no wiring or drills needed. USB rechargeable, auto on/off, soft warm glow. 2 lights included.</p>
+      <button class="add-btn" onclick="addToCart('Motion Sensor Night Lights (2-Pack)', 18.99)">Add to Cart</button>
+    </div>
+  </div>
+
+  <!-- PRODUCT 2: 3-in-1 Wireless Charging Station -->
+  <div class="product-card">
+    <div class="image-gallery">
+      <div class="product-img">
+        <img src="https://images.unsplash.com/photo-1592899677977-9c14ca38d56b?w=400&h=300&fit=crop" alt="Wireless charging station">
+      </div>
+      <div class="product-img">
+        <img src="https://images.unsplash.com/photo-1609081219090-97e9b05a6802?w=400&h=300&fit=crop" alt="3 devices charging">
+      </div>
+      <div class="product-img">
+        <img src="https://images.unsplash.com/photo-1542748075-7f90c30a5d0d?w=400&h=300&fit=crop" alt="Bedside setup">
+      </div>
+    </div>
+    <p class="scroll-hint">← Swipe for more →</p>
+    <div class="product-info">
+      <h2 class="product-title">3-in-1 Wireless Charging Station</h2>
+      <p class="price">£32.99</p>
+      <p class="description">Charges phone, earbuds and smart watch all at once. Sleek premium finish, stable anti-slip base, neat cable-free design. Perfect for bedside or desk.</p>
+      <button class="add-btn" onclick="addToCart('3-in-1 Wireless Charging Station', 32.99)">Add to Cart</button>
+    </div>
+  </div>
+
+  <!-- PRODUCT 3: Selfie Stick Tripod with Fill Light -->
+  <div class="product-card">
+    <div class="image-gallery">
+      <div class="product-img">
+        <img src="https://images.unsplash.com/photo-1611538701300-5033200da035?w=400&h=300&fit=crop" alt="Selfie stick in use">
+      </div>
+      <div class="product-img">
+        <img src="https://images.unsplash.com/photo-1502920917128-1aa50076cbda?w=400&h=300&fit=crop" alt="Tripod mode">
+      </div>
+      <div class="product-img">
+        <img src="https://images.unsplash.com/photo-1591381423524-802b331c4c9c?w=400&h=300&fit=crop" alt="Fill light close-up">
+      </div>
+      <div class="product-img">
+        <img src="https://images.unsplash.com/photo-1606318878034-5aed0507cb83?w=400&h=300&fit=crop" alt="Compact folded">
+      </div>
+    </div>
+    <p class="scroll-hint">← Swipe for more →</p>
+    <div class="product-info">
+      <h2 class="product-title">Selfie Stick Tripod with Fill Light</h2>
+      <p class="price">£16.99</p>
+      <p class="description">3-in-1 design — selfie stick, tripod and phone holder. Built-in adjustable fill light. Wireless remote control. Folds down pocket-sized. Universal fit for all phones.</p>
+      <button class="add-btn" onclick="addToCart('Selfie Stick Tripod with Fill Light', 16.99)">Add to Cart</button>
+    </div>
+  </div>
+
+  <!-- PRODUCT 4: Magnetic Selfie Ring Light -->
+  <div class="product-card">
+    <div class="image-gallery">
+      <div class="product-img">
+        <img src="https://images.unsplash.com/photo-1591382800007-2303e5900a5b?w=400&h=300&fit=crop" alt="Ring light on phone">
+      </div>
+      <div class="product-img">
+        <img src="https://images.unsplash.com/photo-1616468290147-14b041d7d492?w=400&h=300&fit=crop" alt="Magnetic attachment">
+      </div>
+      <div class="product-img">
+        <img src="https://images.unsplash.com/photo-1607082350899-5e70f0629080?w=400&h=300&fit=crop" alt="Light modes">
+      </div>
+      <div class="product-img">
+        <img src="https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=400&h=300&fit=crop" alt="Compact portable">
+      </div>
+    </div>
+    <p class="scroll-hint">← Swipe for more →</p>
+    <div class="product-info">
+      <h2 class="product-title">Magnetic Selfie Ring Light</h2>
+      <p class="price">£14.99</p>
+      <p class="description">Strong magnetic clip-on light. 3 colour modes — warm, natural, cool white — with adjustable brightness. 360° rotation, foldable. USB rechargeable, pocket-sized.</p>
+      <button class="add-btn" onclick="addToCart('Magnetic Selfie Ring Light', 14.99)">Add to Cart</button>
+    </div>
+  </div>
+
+  <!-- PRODUCT 5: RGB Thunder Cloud Lamp -->
+  <div class="product-card">
+    <div class="image-gallery">
+      <div class="product-img">
+        <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=400&h=300&fit=crop" alt="Cloud light gaming setup">
+      </div>
+      <div class="product-img">
+        <img src="https://images.unsplash.com/photo-1579546929518-9e396f3cc806?w=400&h=300&fit=crop" alt="Rainbow colours">
+      </div>
+      <div class="product-img">
+        <img src="https://images.unsplash.com/photo-1541701494563-c085e3061c50?w=400&h=300&fit=crop" alt="Bedroom ambient light">
+      </div>
+      <div class="product-img">
+        <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?w=400&h=300&fit=crop" alt="Soft glow">
+      </div>
+      <div class="product-img">
+        <img src="https://images.unsplash.com/photo-1507400492013-162706c8c05e?w=400&h=300&fit=crop" alt="Remote control">
+      </div>
+    </div>
+    <p class="scroll-hint">← Swipe for more →</p>
+    <div class="product-info">
+      <h2 class="product-title">RGB Thunder Cloud Lamp</h2>
+      <p class="price">£29.99</p>
+      <p class="description">Fluffy cloud wall light with millions of colours. Music-reactive — dances to sound. Controlled via app or remote. USB powered. Size: 100cm wide.</p>
+      <button class="add-btn" onclick="addToCart('RGB Thunder Cloud Lamp', 29.99)">Add to Cart</button>
+    </div>
+  </div>
+</div>
+
+<!-- CART MODAL -->
+<div class="modal-overlay" id="cartOverlay" onclick="closeCartOverlay(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h2>Your Cart</h2>
+      <button class="close-btn" onclick="closeCart()">&times;</button>
+    </div>
+    
+    <div id="cartContent">
+      <div class="empty-cart" id="emptyMsg">Your cart is empty</div>
+      <div id="cartItems"></div>
+      <div class="cart-total" id="cartTotal" style="display:none;"></div>
+      <button class="checkout-btn" id="checkoutBtn" style="display:none;" onclick="showPayment()">Proceed to Checkout</button>
+    </div>
+
+    <div class="payment-form" id="paymentForm">
+      <h3>Payment Details</h3>
+      <div class="form-group">
+        <label>Cardholder Name</label>
+        <input type="text" placeholder="John Smith" id="cardName">
+      </div>
+      <div class="form-group">
+        <label>Card Number</label>
+        <input type="text" placeholder="1234 5678 9012 3456" id="cardNum">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Expiry</label>
+          <input type="text" placeholder="MM/YY" id="cardExp">
+        </div>
+        <div class="form-group">
+          <label>CVV</label>
+          <input type="text" placeholder="123" id="cardCvv">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Address</label>
+        <input type="text" placeholder="Street Address" id="addr">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Postcode</label>
+          <input type="text" placeholder="G1 1AA" id="postcode">
+        </div>
+        <div class="form-group">
+          <label>City</label>
+          <input type="text" placeholder="Glasgow" id="city">
+        </div>
+      </div>
+      <button class="submit-payment" onclick="submitPayment()">Place Order</button>
+    </div>
+
+    <div class="success-msg" id="successMsg">
+      <h2>✅ Order Confirmed!</h2>
+      <p style="margin-top:15px;">Thank you for shopping with VYRO.<br>Your order is being processed.</p>
+      <button class="add-btn" style="margin-top:25px;" onclick="closeCart()">Continue Shopping</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let cart = [];
+
+function addToCart(name, price) {
+  cart.push({ name, price });
+  updateCartCount();
+  alert('Added to cart! 🛒');
+}
+
+function updateCartCount() {
+  document.getElementById('cartCount').textContent = cart.length;
+}
+
+function openCart() {
+  document.getElementById('cartOverlay').classList.add('active');
+  renderCart();
+}
+
+function closeCart() {
+  document.getElementById('cartOverlay').classList.remove('active');
+  document.getElementById('paymentForm').classList.remove('active');
+  document.getElementById('successMsg').classList.remove('active');
+}
+
+function closeCartOverlay(event) {
+  if (event.target === document.getElementById('cartOverlay')) closeCart();
+}
+
+function renderCart() {
+  const itemsDiv = document.getElementById('cartItems');
+  const emptyMsg = document.getElementById('emptyMsg');
+  const totalDiv = document.getElementById('cartTotal');
+  const checkoutBtn = document.getElementById('checkoutBtn');
+  
+  itemsDiv.innerHTML = '';
+  
+  if (cart.length === 0) {
+    emptyMsg.style.display = 'block';
+    totalDiv.style.display = 'none';
+    checkoutBtn.style.display = 'none';
+    return;
+  }
+  
+  emptyMsg.style.display = 'none';
+  totalDiv.style.display = 'block';
+  checkoutBtn.style.display = 'block';
+  
+  let total = 0;
+  cart.forEach((item, index) => {
+    total += item.price;
+    itemsDiv.innerHTML += `
+      <div class="cart-item">
+        <div class="item-info">
+          <h4>${item.name}</h4>
+          <p>£${item.price.toFixed(2)}</p>
+        </div>
+        <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+      </div>
+    `;
+  });
+  
+  totalDiv.textContent = `Total: £${total.toFixed(2)}`;
+}
+
+function removeItem(index) {
+  cart.splice(index, 1);
+  updateCartCount();
+  renderCart();
+}
+
+function showPayment() {
+  document.getElementById('cartContent').style.display = 'none';
+  document.getElementById('paymentForm').classList.add('active');
+}
+
+function submitPayment() {
+  document.getElementById('paymentForm').style.display = 'none';
+  document.getElementById('successMsg').classList.add('active');
+  cart = [];
+  updateCartCount();
+}
+</script>
+
+</body>
+</html>
