@@ -70,7 +70,7 @@ footer{background:#111;color:#fff;padding:45px 20px;margin-top:30px}.footerin{ma
 
 <script>
 const products=[
-{id:1,name:"CreatorPro™ 3-in-1 Selfie Stick Tripod",price:19.99,old:29.99,emoji:"📸",desc:"Portable selfie stick and tripod with a Bluetooth shutter for photos, videos and content."},
+{id:1,name:"CreatorPro™ 3-in-1 Selfie Stick Tripod",price:19.99,old:29.99,emoji:"",desc:"Portable selfie stick and tripod with a Bluetooth shutter for photos, videos and content."},
 {id:2,name:"ChillCup™ Slushie Maker Cup",price:18.99,old:27.99,emoji:"🥤",desc:"Make icy drinks at home with a fun, shareable gadget."},
 {id:3,name:"GlowHome™ Ambient Light",price:21.99,old:31.99,emoji:"💡",desc:"Add a cosy glow to bedrooms, desks and living spaces."},
 {id:4,name:"PrepSet™ Glass Meal Containers",price:29.99,old:39.99,emoji:"🥗",desc:"Reusable containers for organised meals and leftovers."},
@@ -78,7 +78,8 @@ const products=[
 ];
 let bag=JSON.parse(localStorage.getItem("vyroBag")||"[]");
 function money(n){return "£"+n.toFixed(2)}
-function renderProducts(){document.getElementById("products").innerHTML=products.map(p=>`<article class="product"><div class="pic">${p.emoji}</div><div class="info"><h3>${p.name}</h3><div class="price">${money(p.price)} <span class="old">${money(p.old)}</span></div><p class="small">${p.desc}</p>${p.id===1?`<a class="btn" href="vyro-creatorpro-product.html" style="display:inline-block;text-align:center;margin-bottom:8px">View product</a>`:""}<button class="btn add" onclick="add(${p.id})">Add to bag</button></div></article>`).join("")}
+function renderProducts(){document.getElementById("products").innerHTML=products.map(p=>`<article class="product"><div class="pic">${p.id===1 ? '<img src="vyro-selfie-stick-no-icons.jpg" alt="CreatorPro Selfie Stick Tripod">' : p.emoji}</div>
+class="info"><h3>${p.name}</h3><div class="price">${money(p.price)} <span class="old">${money(p.old)}</span></div><p class="small">${p.desc}</p>${p.id===1?`<a class="btn" href="vyro-creatorpro-product.html" style="display:inline-block;text-align:center;margin-bottom:8px">View product</a>`:""}<button class="btn add" onclick="add(${p.id})">Add to bag</button></div></article>`).join("")}
 function add(id){bag.push(id);save();openCart()}
 function save(){localStorage.setItem("vyroBag",JSON.stringify(bag));renderCart()}
 function renderCart(){document.getElementById("count").textContent=bag.length;const items=bag.map(id=>products.find(p=>p.id===id)).filter(Boolean);if(!items.length){document.getElementById("cart").innerHTML='<p class="muted">Your bag is empty.</p>';document.getElementById("total").textContent="Total: £0.00";return}document.getElementById("cart").innerHTML=items.map((p,i)=>`<div class="cartitem"><div class="cartemoji">${p.emoji}</div><div style="flex:1"><b>${p.name}</b><div class="small">${money(p.price)}</div></div><button onclick="removeItem(${i})" style="border:0;background:none;cursor:pointer">Remove</button></div>`).join("");document.getElementById("total").textContent="Total: "+money(items.reduce((s,p)=>s+p.price,0))}
