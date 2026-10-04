@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VYRO Store</title>
+    <style>
+        * {margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',Roboto,Arial,sans-serif;}
+        body {
+            min-height:100vh;
+            background:radial-gradient(circle at top left,#1f1f3a 0%,#0f0f23 45%,#050510 100%);
+            color:#fff;
+            padding:0 20px 60px;
+            max-width:1200px;
+            margin:0 auto;
+        }
+        header {
+            text-align:center;
+            padding:40px 0 30px;
+            border-bottom:1px solid rgba(255,255,255,0.08);
+        }
+        .logo {
+            width:90px; height:90px; border-radius:22px; margin-bottom:20px;
+            box-shadow:0 0 25px rgba(59,130,246,0.55);
+        }
+        h1 {
+            font-size:3.4rem; font-weight:800; letter-spacing:1px;
+            background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            background-clip:text; margin-bottom:8px;
+        }
+        .subtitle {font-size:1.15rem; color:#94a3b8; font-weight:300;}
+        .slideshow {
+            position:relative; width:100%; height:320px; margin:40px auto;
+            border-radius:20px; overflow:hidden;
+            background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
+        }
+        .slide {
+            position:absolute; width:100%; height:100%;
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            padding:30px; opacity:0; transition:opacity 0.8s ease;
+        }
+        .slide.active {opacity:1;}
+        .slide h2 {
+            font-size:2.2rem; margin-bottom:12px;
+            background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+        }
+        .slide p {font-size:1.1rem; color:#cbd5e1; max-width:600px; text-align:center;}
+        .slide-dots {
+            position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
+            display:flex; gap:12px;
+        }
+        .dot {
+            width:12px; height:12px; border-radius:50%;
+            background:rgba(255,255,255,0.2); cursor:pointer; transition:0.3s;
+        }
+        .dot.active {
+            background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+            box-shadow:0 0 10px rgba(59,130,246,0.5);
+        }
+        .section-title {
+            font-size:1.8rem; margin:20px 0 30px; text-align:center; color:#e2e8f0;
+        }
+        .products {
+            display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:35px;
+        }
+        .card {
+            background:rgba(255,255,255,0.045); border:1px solid rgba(255,255,255,0.08);
+            border-radius:18px; padding:28px; backdrop-filter:blur(18px);
+            transition:0.35s ease; position:relative; overflow:hidden;
+        }
+        .card::before {
+            content:""; position:absolute; inset:0;
+            background:linear-gradient(135deg,rgba(59,130,246,0.12),rgba(139,92,246,0.12));
+            opacity:0; transition:opacity 0.35s ease;
+        }
+        .card:hover::before {opacity:1;}
+        .card:hover {
+            transform:translateY(-8px); box-shadow:0 15px 35px rgba(0,0,0,0.35);
+            border-color:rgba(59,130,246,0.22);
+        }
+        .card h3 {font-size:1.4rem; margin-bottom:10px; color:#fff; position:relative; z-index:1;}
+        .card p {color:#94a3b8; margin-bottom:14px; line-height:1.55; position:relative; z-index:1;}
+        .price {
+            font-size:1.5rem; font-weight:bold;
+            background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+            margin-bottom:18px; position:relative; z-index:1;
+        }
+        .btn {
+            width:100%; padding:14px;
+            background:linear-gradient(135deg,#3b82f6,#8b5cf6);
+            color:#fff; border:none; border-radius:12px; font-size:1rem; font-weight:600;
+            cursor:pointer; transition:0.25s ease;
+            box-shadow:0 8px 18px rgba(59,130,246,0.35);
+            position:relative; z-index:1;
+        }
+        .btn:hover {transform:translateY(-2px); box-shadow:0 12px 25px rgba(59,130,246,0.45);}
+        .product-img {
+            width:100%; height:200px; object-fit:cover; border-radius:12px; margin-bottom:15px;
+        }
+        @media (max-width:640px) {
+            h1 {font-size:2.2rem;}
+            .products {grid-template-columns:1fr;}
+            .slide h2 {font-size:1.6rem;}
+            .slideshow {height:260px;}
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img src="https://image.seed.so/i/0194bb71-192f-7168-a728-127c44c3e56c" alt="VYRO Logo" class="logo">
+        <h1>VYRO STORE</h1>
+        <p class="subtitle">Trending products — built for speed and style</p>
+    </header>
+
+    <div class="slideshow">
+        <div class="slide active" data-index="0">
+            <h2>🔥 NEW ARRIVALS</h2>
+            <p>Drop 01 now live — limited stock only. Don't miss out.</p>
+        </div>
+        <div class="slide" data-index="1">
+            <h2>⚡ PREMIUM QUALITY</h2>
+            <p>Top-tier gear designed to stand out. Style meets performance.</p>
+        </div>
+        <div class="slide" data-index="2">
+            <h2>🚀 FAST SHIPPING</h2>
+            <p>Worldwide delivery — get your VYRO gear fast & secure.</p>
+        </div>
+        <div class="slide-dots">
+            <span class="dot active" data-index="0"></span>
+            <span class="dot" data-index="1"></span>
+            <span class="dot" data-index="2"></span>
+        </div>
+    </div>
+
+    <h2 class="section-title">Shop Our Collection</h2>
+    <div class="products">
+        <div class="card">
+            <h3>VYRO Selfie Stick</h3>
+            <p>Premium design — capture your best moments in style.</p>
+            <p class="price">£29.99</p>
+            <button class="btn">Buy Now</button>
+        </div>
+        <div class="card">
+            <h3>VYRO Product 2</h3>
+            <p>Exclusive release — limited edition. Once gone, it's gone.</p>
+            <p class="price">£49.99</p>
+            <button class="btn">Buy Now</button>
+        </div>
+        <div class="card">
+            <h3>VYRO Product 3</h3>
+            <p>Flagship item — our best yet. Bold design, unmatched quality.</p>
+            <p class="price">£39.99</p>
+            <button class="btn">Buy Now</button>
+        </div>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const dots = document.querySelectorAll('.dot');
+        let current = 0;
+        function showSlide(index) {
+            slides.forEach(s => s.classList.remove('active'));
+            dots.forEach(d => d.classList.remove('active'));
+            slides[index].classList.add('active');
+            dots[index].classList.add('active');
+            current = index;
+        }
+        setInterval(() => {
+            const next = (current + 1) % slides.length;
+            showSlide(next);
+        }, 5000);
+        dots.forEach((dot, i) => {
+            dot.addEventListener('click', () => showSlide(i));
+        });
+    </script>
+</body>
+</html>
