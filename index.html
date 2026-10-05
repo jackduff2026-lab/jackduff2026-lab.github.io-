@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VYRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
+        :root {
+            --neon-pink: #ff2e97;
+            --neon-cyan: #00f0ff;
+            --dark-bg: #050508;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--dark-bg);
+            color: #fff;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Orbitron', sans-serif; }
+        .neon-cyan { text-shadow: 0 0 8px var(--neon-cyan), 0 0 15px var(--neon-cyan); color: var(--neon-cyan); }
+        .neon-pink { text-shadow: 0 0 8px var(--neon-pink), 0 0 15px var(--neon-pink); color: var(--neon-pink); }
+        .nav-bar {
+            position: sticky; top: 0;
+            background: rgba(0,0,0,0.85);
+            border-bottom: 1px solid rgba(0,240,255,0.2);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 50;
+        }
+        .cart-icon { position: relative; cursor: pointer; }
+        .cart-badge {
+            position: absolute; top: -8px; right: -8px;
+            background: var(--neon-pink); color: white;
+            font-size: 11px; width: 18px; height: 18px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+        .product-card {
+            background: rgba(20,20,35,0.8);
+            border: 1px solid rgba(0,240,255,0.25);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+        .product-card:hover { border-color: var(--neon-cyan); transform: translateY(-3px); }
+        .product-img { width: 100%; height: 220px; object-fit: cover; background: #1a1a2e; }
+        .btn {
+            padding: 10px 16px; border-radius: 8px; border: none;
+            font-weight: 600; cursor: pointer; transition: 0.3s;
+        }
+        .btn-cyan { background: rgba(0,240,255,0.15); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); }
+        .btn-cyan:hover { background: rgba(0,240,255,0.3); }
+        .btn-pink { background: rgba(255,46,151,0.15); border: 1px solid var(--neon-pink); color: var(--neon-pink); }
+        .btn-pink:hover { background: rgba(255,46,151,0.3); }
+        .cart-panel {
+            position: fixed; top: 0; right: 0; width: 100%; max-width: 400px;
+            height: 100vh; background: #111; border-left: 1px solid rgba(0,240,255,0.2);
+            transform: translateX(100%); transition: 0.3s; z-index: 100; padding: 20px;
+        }
+        .cart-panel.open { transform: translateX(0); }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99; display: none; }
+        .overlay.active { display: block; }
+        .checkout-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px;
+        }
+        .checkout-modal.active { display: flex; }
+        .modal-box {
+            background: #151525; border: 1px solid rgba(0,240,255,0.3);
+            border-radius: 12px; padding: 25px; max-width: 420px; width: 100%; max-height: 90vh; overflow-y: auto;
+        }
+        input {
+            width: 100%; padding: 12px; margin: 8px 0;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.2);
+            border-radius: 8px; color: white; outline: none;
+        }
+        input:focus { border-color: var(--neon-cyan); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .price { font-size: 22px; font-weight: 700; color: var(--neon-cyan); }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="nav-bar">
+    <h1 class="text-2xl font-bold neon-cyan">VYRO</h1>
+    <div class="cart-icon" onclick="toggleCart()">
+        <i class="fa-solid fa-cart-shopping text-xl"></i>
+        <span id="badge" class="cart-badge hidden">0</span>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="text-center py-12 px-4">
+    <h2 class="text-3xl md:text-5xl font-bold mb-4">
+        <span class="neon-cyan">ELEVATE</span> YOUR
+        <span class="neon-pink">EVERYDAY</span>
+    </h2>
+    <p class="text-gray-400 text-lg">Premium essentials — built for modern living</p>
+</section>
+
+<!-- Products Grid -->
+<div class="grid" id="products">
+    <!-- Product 1 -->
+    <div class="product-card">
+        <img src="img_0176.jpg" alt="3-in-1 Wireless Charging Stand" class="product-img" onerror="this.src='https://via.placeholder.com/400x220/111/00f0ff?text=Charging+Stand'">
+        <div class="p-5">
+            <h3 class="text-xl font-bold mb-2">3-in-1 Wireless Charging Stand</h3>
+            <p class="text-gray-400 text-sm mb-3">Fast wireless charger for phone, watch & earbuds — sleek design, all-in-one station.</p>
+            <p class="price mb-4">£34.00</p>
+            <div class="flex gap-2">
+                <button class="btn btn-cyan flex-1" onclick="addToCart('3-in-1 Charging Stand', 34)">Add to Cart</button>
+                <button class="btn btn-pink flex-1" onclick="buyNow('3-in-1 Charging Stand', 34)">Buy Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product 2 -->
+    <div class="product-card">
+        <img src="img_0177.jpg" alt="Portable Car Vacuum" class="product-img" onerror="this.src='https://via.placeholder.com/400x220/111/ff2e97?text=Car+Vacuum'">
+        <div class="p-5">
+            <h3 class="text-xl font-bold mb-2">Portable Car Vacuum Cleaner</h3>
+            <p class="text-gray-400 text-sm mb-3">High-power handheld vacuum — strong suction, compact design, easy car cleaning.</p>
+            <p class="price mb-4">£20.00</p>
+            <div class="flex gap-2">
+                <button class="btn btn-cyan flex-1" onclick="addToCart('Portable Car Vacuum', 20)">Add to Cart</button>
+                <button class="btn btn-pink flex-1" onclick="buyNow('Portable Car Vacuum', 20)">Buy Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product 3 -->
+    <div class="product-card">
+        <img src="img_0178.jpg" alt="Motion Sensor LED Light" class="product-img" onerror="this.src='https://via.placeholder.com/400x220/111/b829ff?text=Motion+Light'">
+        <div class="p-5">
+            <h3 class="text-xl font-bold mb-2">Motion Sensor LED Night Light</h3>
+            <p class="text-gray-400 text-sm mb-3">Auto-on warm glow light — battery powered, stick anywhere, gentle illumination.</p>
+            <p class="price mb-4">£25.00</p>
+            <div class="flex gap-2">
+                <button class="btn btn-cyan flex-1" onclick="addToCart('Motion Sensor LED Light', 25)">Add to Cart</button>
+                <button class="btn btn-pink flex-1" onclick="buyNow('Motion Sensor LED Light', 25)">Buy Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product 4 -->
+    <div class="product-card">
+        <img src="img_0162.jpg" alt="Selfie Stick Tripod" class="product-img" onerror="this.src='https://via.placeholder.com/400x220/111/00f0ff?text=Selfie+Stick'">
+        <div class="p-5">
+            <h3 class="text-xl font-bold mb-2">Extendable Selfie Stick Tripod</h3>
+            <p class="text-gray-400 text-sm mb-3">All-in-one stand — extendable pole, built-in tripod, wireless remote included.</p>
+            <p class="price mb-4">£24.99</p>
+            <div class="flex gap-2">
+                <button class="btn btn-cyan flex-1" onclick="addToCart('Selfie Stick Tripod', 24.99)">Add to Cart</button>
+                <button class="btn btn-pink flex-1" onclick="buyNow('Selfie Stick Tripod', 24.99)">Buy Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product 5 -->
+    <div class="product-card">
+        <img src="img_0163.jpg" alt="10 inch LED Ring Light" class="product-img" onerror="this.src='https://via.placeholder.com/400x220/111/ff2e97?text=Ring+Light'">
+        <div class="p-5">
+            <h3 class="text-xl font-bold mb-2">10" LED Ring Light</h3>
+            <p class="text-gray-400 text-sm mb-3">Dimmable glow with 3 colour modes — perfect for photos, videos & streaming.</p>
+            <p class="price mb-4">£15.00</p>
+            <div class="flex gap-2">
+                <button class="btn btn-cyan flex-1" onclick="addToCart('10 inch LED Ring Light', 15)">Add to Cart</button>
+                <button class="btn btn-pink flex-1" onclick="buyNow('10 inch LED Ring Light', 15)">Buy Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product 6 -->
+    <div class="product-card">
+        <img src="img_0165.jpg" alt="Cloud LED Night Lamp" class="product-img" onerror="this.src='https://via.placeholder.com/400x220/111/b829ff?text=Cloud+Lamp'">
+        <div class="p-5">
+            <h3 class="text-xl font-bold mb-2">Cloud LED Night Lamp</h3>
+            <p class="text-gray-400 text-sm mb-3">Dreamy cloud-shaped light — soft glow, calming atmosphere, unique room decor.</p>
+            <p class="price mb-4">£25.00</p>
+            <div class="flex gap-2">
+                <button class="btn btn-cyan flex-1" onclick="addToCart('Cloud LED Night Lamp', 25)">Add to Cart</button>
+                <button class="btn btn-pink flex-1" onclick="buyNow('Cloud LED Night Lamp', 25)">Buy Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product 7 -->
+    <div class="product-card">
+        <img src="img_0172.jpg" alt="Adjustable Device Stand" class="product-img" onerror="this.src='https://via.placeholder.com/400x220/111/00f0ff?text=Device+Stand'">
+        <div class="p-5">
+            <h3 class="text-xl font-bold mb-2">Adjustable Multi-Device Stand</h3>
+            <p class="text-gray-400 text-sm mb-3">Solid aluminium holder — holds phone, tablet or laptop at perfect angle.</p>
+            <p class="price mb-4">£24.99</p>
+            <div class="flex gap-2">
+                <button class="btn btn-cyan flex-1" onclick="addToCart('Adjustable Device Stand', 24.99)">Add to Cart</button>
+                <button class="btn btn-pink flex-1" onclick="buyNow('Adjustable Device Stand', 24.99)">Buy Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Product 8 -->
+    <div class="product-card">
+        <img src="img_0169.jpg" alt="Creator Bundle" class="product-img" onerror="this.src='https://via.placeholder.com/400x220/111/ff2e97?text=Creator+Bundle'">
+        <div class="p-5">
+            <h3 class="text-xl font-bold mb-2">All-in-One Creator Bundle</h3>
+            <p class="text-gray-400 text-sm mb-3">Complete content kit — lighting, mounting & accessories in one package.</p>
+            <p class="price mb-4">£39.99</p>
+            <div class="flex gap-2">
+                <button class="btn btn-cyan flex-1" onclick="addToCart('Creator Bundle', 39.99)">Add to Cart</button>
+                <button class="btn btn-pink flex-1" onclick="buyNow('Creator Bundle', 39.99)">Buy Now</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Cart Overlay & Panel -->
+<div id="overlay" class="overlay" onclick="toggleCart()"></div>
+<div id="cartPanel" class="cart-panel">
+    <div class="flex justify-between items-center mb-5">
+        <h3 class="text-xl font-bold neon-cyan">Your Cart</h3>
+        <button onclick="toggleCart()" class="text-gray-400 text-xl">&times;</button>
+    </div>
+    <div id="cartItems" class="space-y-4 mb-6"></div>
+    <div class="border-t border-gray-700 pt-4">
+        <p class="text-xl font-bold mb-4">Total: £<span id="cartTotal">0.00</span></p>
+        <button class="btn btn-pink w-full" onclick="openCheckout()">Proceed to Checkout</button>
+    </div>
+</div>
+
+<!-- Checkout Modal -->
+<div id="checkoutModal" class="checkout-modal">
+    <div class="modal-box">
+        <div id="checkoutForm">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-xl font-bold neon-pink">Checkout</h3>
+                <button onclick="closeCheckout()" class="text-gray-400 text-xl">&times;</button>
+            </div>
+            <input type="text" id="name" placeholder="Full Name" required>
+            <input type="email" id="email" placeholder="Email Address" required>
+            <input type="text" id="address" placeholder="Street Address" required>
+            <input type="text" id="postcode" placeholder="Postcode" required>
+            
+            <p class="mt-4 mb-2 font-semibold">Payment Method</p>
+            <div class="space-y-2 mb-4">
+                <label class="flex items-center gap-3 p-3 border border-gray-700 rounded-lg cursor-pointer hover:border-cyan-400">
+                    <input type="radio" name="payment" value="card" checked> 💳 Credit/Debit Card
+                </label>
+                <label class="flex items-center gap-3 p-3 border border-gray-700 rounded-lg cursor-pointer hover:border-cyan-400">
+                    <input type="radio" name="payment" value="paypal"> 🅿️ PayPal
+                </label>
+                <label class="flex items-center gap-3 p-3 border border-gray-700 rounded-lg cursor-pointer hover:border-cyan-400">
+                    <input type="radio" name="payment" value="apple"> 🍎 Apple Pay
+                </label>
+                <label class="flex items-center gap-3 p-3 border border-gray-700 rounded-lg cursor-pointer hover:border-cyan-400">
+                    <input type="radio" name="payment" value="google"> 💙 Google Pay
+                </label>
+            </div>
+            
+            <p class="text-xl font-bold mb-4">Total: £<span id="checkoutTotal">0.00</span></p>
+            <button class="btn btn-pink w-full" onclick="placeOrder()">Place Order</button>
+        </div>
+        
+        <div id="confirmation" class="hidden text-center py-8">
+            <div class="text-5xl mb-4">✅</div>
+            <h3 class="text-2xl font-bold neon-cyan mb-3">Order Confirmed!</h3>
+            <p class="mb-2">Order #VYRO-<span id="orderNum"></span></p>
+            <p class="text-gray-400 mb-5">Thank you! Estimated delivery: 3–5 working days.</p>
+            <button class="btn btn-cyan" onclick="closeCheckout()">Done</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let cart = [];
+
+function updateBadge() {
+    const badge = document.getElementById('badge');
+    const total = cart.reduce((sum, item) => sum + item.qty, 0);
+    badge.textContent = total;
+    badge.classList.toggle('hidden', total === 0);
+}
+
+function renderCart() {
+    const container = document.getElementById('cartItems');
+    container.innerHTML = '';
+    let total = 0;
+    
+    cart.forEach((item, idx) => {
+        total += item.price * item.qty;
+        container.innerHTML += `
+            <div class="flex justify-between items-center py-2 border-b border-gray-800">
+                <div>
+                    <p class="font-semibold">${item.name}</p>
+                    <p class="text-gray-400 text-sm">£${item.price.toFixed(2)} × ${item.qty}</p>
+                </div>
+                <button onclick="removeItem(${idx})" class="text-red-400 text-sm">Remove</button>
+            </div>
+        `;
+    });
+    
+    document.getElementById('cartTotal').textContent = total.toFixed(2);
+    updateBadge();
+}
+
+function addToCart(name, price) {
+    const existing = cart.find(i => i.name === name);
+    if (existing) existing.qty++;
+    else cart.push({ name, price, qty: 1 });
+    renderCart();
+    toggleCart();
+}
+
+function removeItem(index) {
+    cart.splice(index, 1);
+    renderCart();
+}
+
+function toggleCart() {
+    document.getElementById('overlay').classList.toggle('active');
+    document.getElementById('cartPanel').classList.toggle('open');
+}
+
+function buyNow(name, price) {
+    addToCart(name, price);
+    setTimeout(() => {
+        toggleCart();
+        openCheckout();
+    }, 300);
+}
+
+function openCheckout() {
+    if (cart.length === 0) return alert('Your cart is empty!');
+    document.getElementById('checkoutTotal').textContent = cart.reduce((s, i) => s + i.price * i.qty, 0).toFixed(2);
+    document.getElementById('checkoutModal').classList.add('active');
+    document.getElementById('checkoutForm').classList.remove('hidden');
+    document.getElementById('confirmation').classList.add('hidden');
+}
+
+function closeCheckout() {
+    document.getElementById('checkoutModal').classList.remove('active');
+}
+
+function placeOrder() {
+    const name = document.getElementById('name').value;
+    if (!name) return alert('Please fill in your details');
+    
+    document.getElementById('checkoutForm').classList.add('hidden');
+    document.getElementById('confirmation').classList.remove('hidden');
+    document.getElementById('orderNum').textContent = Math.floor(Math.random() * 90000 + 10000);
+    
+    cart = [];
+    renderCart();
+}
+</script>
+</body>
+</html>
