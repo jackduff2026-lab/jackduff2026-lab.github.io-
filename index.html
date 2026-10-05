@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <base href="/vyro/">
+    <title>VYRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+        :root {
+            --neon-pink: #ff2e97;
+            --neon-cyan: #00f0ff;
+            --neon-purple: #b829ff;
+            --dark-bg: #050508;
+        }
+        * { font-family: 'Rajdhani', sans-serif; box-sizing: border-box; margin: 0; padding: 0; }
+        h1, h2, h3, h4 { font-family: 'Orbitron', sans-serif; }
+        body {
+            background: var(--dark-bg);
+            background-image: radial-gradient(circle at 20% 50%, rgba(184,41,255,0.08) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 80%, rgba(0,240,255,0.08) 0%, transparent 50%);
+            color: #e0e0e0; min-height: 100vh;
+        }
+        .neon-text { text-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan); }
+        .neon-pink-text { text-shadow: 0 0 5px var(--neon-pink), 0 0 10px var(--neon-pink); }
+        .neon-btn {
+            background: linear-gradient(135deg, rgba(0,240,255,0.15), rgba(184,41,255,0.15));
+            border: 1px solid var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(0,240,255,0.3);
+            transition: all 0.3s ease;
+        }
+        .neon-btn:hover { box-shadow: 0 0 20px var(--neon-cyan); transform: translateY(-2px); }
+        .neon-btn-pink {
+            background: linear-gradient(135deg, rgba(255,46,151,0.2), rgba(184,41,255,0.15));
+            border: 1px solid var(--neon-pink);
+            box-shadow: 0 0 10px rgba(255,46,151,0.3);
+        }
+        .neon-btn-pink:hover { box-shadow: 0 0 20px var(--neon-pink); transform: translateY(-2px); }
+        .neon-card {
+            background: rgba(15,15,26,0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0,240,255,0.2);
+            transition: all 0.3s ease;
+        }
+        .neon-card:hover { border-color: rgba(0,240,255,0.5); transform: translateY(-5px); }
+        .slideshow-container { position: relative; overflow: hidden; background: #111; height: 280px; }
+        .slide { display: none; width: 100%; height: 100%; object-fit: cover; }
+        .slide.active { display: block; animation: fade 0.5s ease; }
+        @keyframes fade { from {opacity: 0.4;} to {opacity: 1;} }
+        .cart-badge {
+            position: absolute; top: -6px; right: -6px;
+            background: var(--neon-pink); color: white; border-radius: 50%;
+            width: 18px; height: 18px; font-size: 11px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        input {
+            background: rgba(0,0,0,0.4); border: 1px solid rgba(0,240,255,0.3);
+            color: white; padding: 10px 14px; border-radius: 8px; outline: none; width: 100%;
+        }
+        input:focus { border-color: var(--neon-cyan); box-shadow: 0 0 10px rgba(0,240,255,0.3); }
+        .payment-option {
+            border: 1px solid rgba(255,46,151,0.3); padding: 12px 16px;
+            border-radius: 8px; cursor: pointer; transition: all 0.3s ease;
+        }
+        .payment-option:hover, .payment-option.selected {
+            border-color: var(--neon-pink); background: rgba(255,46,151,0.08);
+        }
+        #cartPanel { position: fixed; top: 0; right: 0; height: 100%; width: 100%; max-width: 420px; background: #111; border-left: 1px solid rgba(0,240,255,0.2); transform: translateX(100%); transition: transform 0.3s ease; z-index: 100; }
+        #cartPanel.open { transform: translateX(0); }
+        #cartOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99; display: none; }
+        #cartOverlay.active { display: block; }
+        #checkoutOverlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px; }
+        #checkoutOverlay.active { display: flex; }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="sticky top-0 z-50 border-b border-cyan-500/20 backdrop-blur-md bg-black/60">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+        <h1 class="text-2xl font-bold neon-text">VYRO</h1>
+        <button onclick="toggleCart()" class="relative p-2 hover:bg-cyan-500/10 rounded-full">
+            <i class="fa-solid fa-cart-shopping text-xl text-cyan-400"></i>
+            <span id="cartBadge" class="cart-badge hidden">0</span>
+        </button>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="py-14 px-4 text-center">...
