@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VYRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@400;500;600;700&display=swap');
+        :root {
+            --neon-pink: #ff2e97;
+            --neon-cyan: #00f0ff;
+            --dark-bg: #050508;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--dark-bg);
+            color: #fff;
+            min-height: 100vh;
+        }
+        h1, h2, h3 { font-family: 'Orbitron', sans-serif; }
+        .neon-cyan { text-shadow: 0 0 8px var(--neon-cyan), 0 0 15px var(--neon-cyan); color: var(--neon-cyan); }
+        .neon-pink { text-shadow: 0 0 8px var(--neon-pink), 0 0 15px var(--neon-pink); color: var(--neon-pink); }
+        .nav-bar {
+            position: sticky; top: 0;
+            background: rgba(0,0,0,0.85);
+            border-bottom: 1px solid rgba(0,240,255,0.2);
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 50;
+        }
+        .cart-icon { position: relative; cursor: pointer; }
+        .cart-badge {
+            position: absolute; top: -8px; right: -8px;
+            background: var(--neon-pink); color: white;
+            font-size: 11px; width: 18px; height: 18px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+        }
+        .product-card {
+            background: rgba(20,20,35,0.8);
+            border: 1px solid rgba(0,240,255,0.25);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: 0.3s;
+        }
+        .product-card:hover { border-color: var(--neon-cyan); transform: translateY(-3px); }
+        .slideshow {
+            position: relative;
+            width: 100%;
+            height: 260px;
+            overflow: hidden;
+            background: #111;
+        }
+        .slide {
+            display: none;
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            background: #000;
+        }
+        .slide.active { display: block; animation: fade 0.5s ease; }
+        @keyframes fade { from {opacity: 0.4;} to {opacity: 1;} }
+        .slide-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(0,0,0,0.6);
+            color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+        .slide-btn:hover { background: rgba(0,240,255,0.5); }
+        .prev { left: 10px; }
+        .next { right: 10px; }
+        .slide-dots {
+            position: absolute;
+            bottom: 12px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 8px;
+        }
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            cursor: pointer;
+        }
+        .dot.active { background: var(--neon-cyan); box-shadow: 0 0 6px var(--neon-cyan); }
+        .btn {
+            padding: 10px 16px; border-radius: 8px; border: none;
+            font-weight: 600; cursor: pointer; transition: 0.3s;
+        }
+        .btn-cyan { background: rgba(0,240,255,0.15); border: 1px solid var(--neon-cyan); color: var(--neon-cyan); }
+        .btn-cyan:hover { background: rgba(0,240,255,0.3); }
+        .btn-pink { background: rgba(255,46,151,0.15); border: 1px solid var(--neon-pink); color: var(--neon-pink); }
+        .btn-pink:hover { background: rgba(255,46,151,0.3); }
+        .cart-panel {
+            position: fixed; top: 0; right: 0; width: 100%; max-width: 400px;
+            height: 100vh; background: #111; border-left: 1px solid rgba(0,240,255,0.2);
+            transform: translateX(100%); transition: 0.3s; z-index: 100; padding: 20px;
+        }
+        .cart-panel.open { transform: translateX(0); }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 99; display: none; }
+        .overlay.active { display: block; }
+        .checkout-modal {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.9);
+            z-index: 200; display: none; align-items: center; justify-content: center; padding: 20px;
+        }
+        .checkout-modal.active { display: flex; }
+        .modal-box {
+            background: #151525; border: 1px solid rgba(0,240,255,0.3);
+            border-radius: 12px; padding: 25px; max-width: 420px; width: 100%; max-height: 90vh; overflow-y: auto;
+        }
+        input {
+            width: 100%; padding: 12px; margin: 8px 0;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(0,240,255,0.2);
+            border-radius: 8px; color: white; outline: none;
+        }
+        input:focus { border-color: var(--neon-cyan); }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; padding: 20px; max-width: 1200px; margin: 0 auto; }
+        .price { font-size: 22px; font-weight: 700; color: var(--neon-cyan); }
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+<nav class="nav-bar">
+    <h1 class="text-2xl font-bold neon-cyan">VYRO</h1>
+    <div class="cart-icon" onclick="toggleCart()">
+        <i class="fa-solid fa-cart-shopping text-xl"></i>
+        <span id="badge" class="cart-badge hidden">0</span>
+    </div>
+</nav>
+
+<section class="text-center py-12 px-4">
+    <h2 class="text-3xl md:text-5xl font-bold mb-4">
+        <span class="neon-cyan">ELEVATE</span> YOUR
+        <span class="neon-pink">EVERYDAY</span>
+    </h2>
+    <p class="text-gray-400 text-lg">Premium essentials — built for modern living</p>
+</section>
+
+<div class="grid" id="products">
+
+    <!-- 1. 3-in-1 Wireless Charging Stand -->
+    <div class="product-card">
+        <div class="slideshow" data-id="p1">
+            <button class="slide-btn prev" onclick="changeSlide('p1', -1)">&#10094;</button>
+            <img src="img_0176.jpg" alt="3-in-1 Charging Stand" class="slide active">
+            <img src="img_0177.jpg" alt="With Phone & Earbuds" class="slide">
+            <img src="img_0178.jpg" alt="Compact Charger" class="slide">
+            <button class="slide-btn next" onclick="changeSlide('p1', 1)">&#10095;</button>
+            <div class="slide-dots">
+                <span class="dot active" onclick="goToSlide('p1', 0)"></span>
+                <span class="dot" onclick="goToSlide('p1', 1)"></span>
+                <span class="dot" onclick="goToSlide('p1', 2)"></span>
+            </div>
+        </div>
+        <div class="p-5">
+            <h3 class="text-xl font-bold mb-2">3-in-1 Wireless Charging Stand</h3>
+            <p class="text-gray-400 text-sm mb-3">All-in-one fast wireless charging station — powers phone, smart watch & earbuds simultaneously. Sleek modern design.</p>
+            <p class="price mb-4">£34.00</p>
+            <div class="flex gap-2">
+                <button class="btn btn-cyan flex-1" onclick="addToCart('3-in-1 Charging Stand', 34)">Add to Cart</button>
+                <button class="btn btn-pink flex-1" onclick="buyNow('3-in-1 Charging Stand', 34)">Buy Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 2. Portable Car Vacuum -->
+    <div class="product-card">
+        <div class="slideshow" data-id="p2">
+            <button class="slide-btn prev" onclick="changeSlide('p2', -1)">&#10094;</button>
+            <img src="img_0162.jpg" alt="Car Vacuum in Use" class="slide active">
+            <img src="img_0163.jpg" alt="Vacuum Accessories" class="slide">
+            <img src="img_0165.jpg" alt="Vacuum Extended" class="slide">
+            <button class="slide-btn next" onclick="changeSlide('p2', 1)">&#10095;</button>
+            <div class="slide-dots">
+                <span class="dot active" onclick="goToSlide('p2', 0)"></span>
+                <span class="dot" onclick="goToSlide('p2', 1)"></span>
+                <span class="dot" onclick="goToSlide('p2', 2)"></span>
+            </div>
+        </div>
+        <div class="p-5">
+            <h3 class="text-xl font-bold mb-2">Portable Car Vacuum Cleaner</h3>
+            <p class="text-gray-400 text-sm mb-3">High-power handheld vacuum with strong suction & extendable nozzle. Compact & lightweight — perfect for keeping your car spotless.</p>
+            <p class="price mb-4">£20.00</p>
+            <div class="flex gap-2">
+                <button class="btn btn-cyan flex-1" onclick="addToCart('Portable Car Vacuum', 20)">Add to Cart</button>
+                <button class="btn btn-pink flex-1" onclick="buyNow('Portable Car Vacuum', 20)">Buy Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 3. Motion Sensor Night Light -->
+    <div class="product-card">
+        <div class="slideshow" data-id="p3">
+            <button class="slide-btn prev" onclick="changeSlide('p3', -1)">&#10094;</button>
+            <img src="img_0169.jpg" alt="Motion Sensor Lights Installed" class="slide active">
+            <img src="img_0172.jpg" alt="Light Design Pair" class="slide">
+            <img src="img_0173.jpg" alt="Light Specs View" class="slide">
+            <button class="slide-btn next" onclick="changeSlide('p3', 1)">&#10095;</button>
+            <div class="slide-dots">
+                <span class="dot active" onclick="goToSlide('p3', 0)"></span>
+                <span class="dot" onclick="goToSlide('p3', 1)"></span>
+                <span class="dot" onclick="goToSlide('p3', 2)"></span>
+            </div>
+        </div>
+        <div class="p-5">
+            <h3 class="text-xl font-bold mb-2">Motion Sensor LED Night Light</h3>
+            <p class="text-gray-400 text-sm mb-3">Auto-on warm glow lighting. Smart motion detection. Elegant wood-acrylic wall design. Gentle illumination for hallways & rooms.</p>
+            <p class="price mb-4">£25.00</p>
+            <div class="flex gap-2">
+                <button class="btn btn-cyan flex-1" onclick="addToCart('Motion Sensor LED Light', 25)">Add to Cart</button>
+                <button class="btn btn-pink flex-1" onclick="buyNow('Motion Sensor LED Light', 25)">Buy Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 4. Selfie Stick Tripod -->
+    <div class="product-card">
+        <div class="slideshow" data-id="p4">
+            <button class="slide-btn prev" onclick="changeSlide('p4', -1)">&#10094;</button>
+            <img src="img_0083.jpg" alt="Selfie Stick Tripod" class="slide active">
+            <img src="img_0088.jpg" alt="Tripod Lighting Setup" class="slide">
+            <img src="img_0089.jpg" alt="In Use" class="slide">
+            <button class="slide-btn next" onclick="changeSlide('p4', 1)">&#10095;</button>
+            <div class="slide-dots">
+                <span class="dot active" onclick="goToSlide('p4', 0)"></span>
+                <span class="dot" onclick="goToSlide('p4', 1)"></span>
+                <span class="dot" onclick="goToSlide('p4', 2)"></span>
+            </div>
+        </div>
+        <div class="p-5">
+            <h3 class="text-xl font-bold mb-2">Extendable Selfie Stick Tripod</h3>
+            <p class="text-gray-400 text-sm mb-3">All-in-one photography stand. Extendable pole, built-in tripod base, wireless remote, and integrated lighting included.</p>
+            <p class="price mb-4">£24.99</p>
+            <div class="flex gap-2">
+                <button class="btn btn-cyan flex-1" onclick="addToCart('Selfie Stick Tripod', 24.99)">Add to Cart</button>
+                <button class="btn btn-pink flex-1" onclick="buyNow('Selfie Stick Tripod', 24.99)">Buy Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 5. Portable LED Fill Light -->
+    <div class="product-card">
+        <div class="slideshow" data-id="p5">
+            <button class="slide-btn prev" onclick="changeSlide('p5', -1)">&#10094;</button>
+            <img src="img_0182.jpg" alt="LED Fill Light Modes" class="slide active">
+            <img src="img_0183.jpg" alt="Clip-on Fill Light" class="slide">
+            <img src="img_0185.jpg" alt="Pocket-Sized Design" class="slide">
+            <button class="slide-btn next" onclick="changeSlide('p5', 1)">&#10095;</button>
+            <div class="slide-dots">
+                <span class="dot active" onclick="goToSlide('p5', 0)"></span>
+                <span class="dot" onclick="goToSlide('p5', 1)"></span>
+                <span class="dot" onclick="goToSlide('p5', 2)"></span>
+            </div>
+        </div>
+        <div class="p-5">
+            <h3 class="text-xl font-bold mb-2">Portable LED Fill Light</h3>
+            <p class="text-gray-400 text-sm mb-3">Dimmable glow with 3 colour modes. Compact clip-on design. Perfect for photos, videos & streaming anywhere.</p>
+            <p class="price mb-4">£15.00</p>
+            <div class="flex gap-2">
+                <button class="btn btn-cyan flex-1" onclick="addToCart('Portable LED Fill Light', 15)">Add to Cart</button>
+                <button class="btn btn-pink flex-1" onclick="buyNow('Portable LED Fill Light', 15)">Buy Now</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 6. Cloud LED Night Lamp -->
+    <div class="product-card">
+        <div class="slideshow" data-id="p6">
+            <button class="slide-btn prev" onclick="changeSlide('p6', -1)">&#10094;</button>
+            <img src="img_0190.jpg" alt="Cloud Light" class="slide active">
+            <img src="img_0192.jpg" alt="Room Decor" class="slide">
+            <img src="img_0193.jpg" alt="Smart App Control" class="slide">
+            <button class="slide-btn next" onclick="changeSlide('p6', 1)">&#10095;</button>
+            <div class="slide-dots">
+                <span class="dot active" onclick="goToSlide('p6', 0)"></span>
+                <span class="dot" onclick="goToSlide('p6', 1)"></span>
+                <span class="dot" onclick="goToSlide('p6', 2)"></span>
+            </div>
+        </div>
+        <div class="p-5">
+            <h3 class="text-xl font-bold mb-2">Cloud LED Night Lamp</h3>
+            <p class="text-gray-400 text-sm mb-3">Dreamy cloud-shaped ambient light. Smart RGB control with remote. Unique calming decor piece for any room.</p>
+            <p class="price mb-4">£25.00</p>
+            <div class="flex gap-2">
+                <button class="btn btn-cyan flex-1" onclick="addToCart('Cloud LED Night Lamp', 25)">Add to Cart</button>
+                <button class="btn btn-pink flex-1" onclick="buyNow('Cloud LED Night Lamp', 25)">Buy Now</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div id="overlay" class="overlay" onclick="toggleCart()"></div>
+<div id="cartPanel" class="cart-panel">
+    <div class="flex justify-between items-center mb-5">
+        <h3 class="text-xl font-bold neon-cyan">Your Cart</h3>
+        <button onclick="toggleCart()" class="text-gray-400 text-xl">&times;</button>
+    </div>
+    <div id="cartItems" class="space-y-4 mb-6"></div>
+    <div class="border-t border-gray-700 pt-4">
+        <p class="text-xl font-bold mb-4">Total: £<span id="cartTotal">0.00</span></p>
+        <button class="btn btn-pink w-full" onclick="openCheckout()">Proceed to Checkout</button>
+    </div>
+</div>
+
+<div id="checkoutModal" class="checkout-modal">
+    <div class="modal-box">
+        <div id="checkoutForm">
+            <div class="flex justify-between items-center mb-5">
+                <h3 class="text-xl font-bold neon-pink">Checkout</h3>
+                <button onclick="closeCheckout()" class="text-gray-400 text-xl">&times;</button>
+            </div>
+            <input type="text" id="name" placeholder="Full Name" required>
+            <input type="email" id="email" placeholder="Email Address" required>
+            <input type="text" id="address" placeholder="Street Address" required>
+            <input type="text" id="postcode" placeholder="Postcode" required>
+            <p class="mt-4 mb-2 font-semibold">Payment Method</p>
+            <div class="space-y-2 mb-4">
+                <label class="flex items-center gap-3 p-3 border border-gray-700 rounded-lg cursor-pointer hover:border-cyan-400">
+                    <input type="radio" name="payment" value="card" checked> Credit / Debit Card
+                </label>
+                <label class="flex items-center gap-3 p-3 border border-gray-700 rounded-lg cursor-pointer hover:border-cyan-400">
+                    <input type="radio" name="payment" value="paypal"> PayPal
+                </label>
+            </div>
+            <button class="btn btn-pink w-full mt-4" onclick="placeOrder()">Place Order</button>
+        </div>
+        <div id="successMsg" class="hidden text-center py-8">
+            <i class="fa-solid fa-check-circle text-5xl text-green-400 mb-4"></i>
+            <h3 class="text-xl font-bold mb-2">Order Confirmed!</h3>
+            <p class="text-gray-400 mb-4">Thank you for shopping with VYRO. We'll send confirmation to your email shortly.</p>
+            <button class="btn btn-cyan" onclick="closeCheckout()">Back to Shop</button>
+        </div>
+    </div>
+</div>
+
+<script>
+let cart = [];
+
+function changeSlide(id, dir) {
+    const slides = document.querySelectorAll(`[data-id="${id}"] .slide`);
+    const dots = document.querySelectorAll(`[data-id="${id}"] .dot`);
+    let activeIndex = Array.from(slides).findIndex(s => s.classList.contains('active'));
+    slides[activeIndex].classList.remove('active');
+    dots[activeIndex].classList.remove('active');
+    activeIndex = (activeIndex + dir + slides.length) % slides.length;
+    slides[activeIndex].classList.add('active');
+    dots[activeIndex].classList.add('active');
+}
+
+function goToSlide(id, index) {
+    const slides = document.querySelectorAll(`[data-id="${id}"] .slide`);
+    const dots = document.querySelectorAll(`[data-id="${id}"] .dot`);
+    slides.forEach(s => s.classList.remove('active'));
+    dots.forEach(d => d.classList.remove('active'));
+    slides[index].classList.add('active');
+    dots[index].classList.add('active');
+}
+
+function updateCartDisplay() {
+    const itemsDiv = document.getElementById('cartItems');
+    const badge = document.getElementById('badge');
+    const totalEl = document.getElementById('cartTotal');
+    
+    if (cart.length === 0) {
+        itemsDiv.innerHTML = '<p class="text-gray-400 text-center py-4">Your cart is empty</p>';
+        badge.classList.add('hidden');
+        totalEl.textContent = '0.00';
+        return;
+    }
+    
+    badge.classList.remove('hidden');
+    badge.textContent = cart.length;
+    
+    let total = 0;
+    itemsDiv.innerHTML = cart.map((item, i) => {
+        total += item.price;
+        return `
+            <div class="flex justify-between items-center py-2 border-b border-gray-800">
+                <div>
+                    <p class="font-semibold">${item.name}</p>
+                    <p class="text-sm text-gray-400">£${item.price.toFixed(2)}</p>
+                </div>
+                <button onclick="removeFromCart(${i})" class="text-red-400 hover:text-red-300">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </div>
+        `;
+    }).join('');
+    
+    totalEl.textContent = total.toFixed(2);
+}
+
+function addToCart(name, price) {
+    cart.push({ name, price });
+    updateCartDisplay();
+    toggleCart();
+}
+
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCartDisplay();
+}
+
+function toggleCart() {
+    document.getElementById('cartPanel').classList.toggle('open');
+    document.getElementById('overlay').classList.toggle('active');
+}
+
+function buyNow(name, price) {
+    cart = [{ name, price }];
+    updateCartDisplay();
+    openCheckout();
+}
+
+function openCheckout() {
+    document.getElementById('checkoutModal').classList.add('active');
+    document.getElementById('checkoutForm').classList.remove('hidden');
+    document.getElementById('successMsg').classList.add('hidden');
+}
+
+function closeCheckout() {
+    document.getElementById('checkoutModal').classList.remove('active');
+}
+
+function placeOrder() {
+    document.getElementById('checkoutForm').classList.add('hidden');
+    document.getElementById('successMsg').classList.add('hidden');
+    cart = [];
+    updateCartDisplay();
+}
+</script>
+
+</body>
+</html>
