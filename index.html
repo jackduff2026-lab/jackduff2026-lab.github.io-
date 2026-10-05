@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VYRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --neon-pink: #ff2e97;
+            --neon-cyan: #00f0ff;
+            --neon-purple: #b829ff;
+            --neon-green: #39ff14;
+            --dark-bg: #050508;
+            --card-bg: #0f0f1a;
+        }
+        
+        * { font-family: 'Rajdhani', sans-serif; box-sizing: border-box; }
+        h1, h2, h3, h4 { font-family: 'Orbitron', sans-serif; }
+        
+        body {
+            background: var(--dark-bg);
+            background-image: 
+                radial-gradient(circle at 20% 50%, rgba(184,41,255,0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0,240,255,0.08) 0%, transparent 50%);
+            color: #e0e0e0;
+            min-height: 100vh;
+        }
+        
+        .neon-text { text-shadow: 0 0 5px var(--neon-cyan), 0 0 10px var(--neon-cyan), 0 0 20px var(--neon-cyan); }
+        .neon-pink-text { text-shadow: 0 0 5px var(--neon-pink), 0 0 10px var(--neon-pink), 0 0 20px var(--neon-pink); }
+        .neon-green-text { text-shadow: 0 0 5px var(--neon-green), 0 0 10px var(--neon-green), 0 0 20px var(--neon-green); }
+        
+        .neon-btn {
+            background: linear-gradient(135deg, rgba(0,240,255,0.15), rgba(184,41,255,0.15));
+            border: 1px solid var(--neon-cyan);
+            box-shadow: 0 0 10px rgba(0,240,255,0.3);
+            transition: all 0.3s ease;
+        }
+        .neon-btn:hover { box-shadow: 0 0 20px var(--neon-cyan); transform: translateY(-2px); }
+        
+        .neon-btn-pink {
+            background: linear-gradient(135deg, rgba(255,46,151,0.15), rgba(184,41,255,0.15));
+            border: 1px solid var(--neon-pink);
+            box-shadow: 0 0 10px rgba(255,46,151,0.3);
+        }
+        .neon-btn-pink:hover { box-shadow: 0 0 20px var(--neon-pink); }
+        
+        .neon-card {
+            background: rgba(15,15,26,0.8);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0,240,255,0.2);
+            box-shadow: 0 0 15px rgba(0,240,255,0.1);
+            transition: all 0.3s ease;
+        }
+        .neon-card:hover {
+            border-color: rgba(0,240,255,0.5);
+            box-shadow: 0 0 25px rgba(0,240,255,0.2);
+            transform: translateY(-5px);
+        }
+        
+        .slideshow-container { position: relative; overflow: hidden; background: #111; }
+        .slide { display: none; }
+        .slide.active { display: block; animation: fade 0.5s ease; }
+        @keyframes fade { from {opacity:0.4;} to {opacity:1;} }
+        
+        .cart-badge {
+            position: absolute; top: -6px; right: -6px;
+            background: var(--neon-pink); color: white;
+            border-radius: 50%; width: 18px; height: 18px;
+            font-size: 11px; display: flex; align-items: center; justify-content: center;
+        }
+        
+        input {
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(0,240,255,0.3);
+            color: white; padding: 10px 14px; border-radius: 8px; outline: none;
+        }
+        input:focus { border-color: var(--neon-cyan); box-shadow: 0 0 10px rgba(0,240,255,0.3); }
+        
+        .payment-option {
+            border: 1px solid rgba(255,46,151,0.3);
+            padding: 12px 16px; border-radius: 8px; cursor: pointer; transition: all 0.3s ease;
+        }
+        .payment-option:hover, .payment-option.selected {
+            border-color: var(--neon-pink); background: rgba(255,46,151,0.08);
+        }
+    </style>
+</head>
+<body>
+
+<!-- Navigation -->
+<nav class="sticky top-0 z-50 border-b border-cyan-500/20 backdrop-blur-md bg-black/60">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
+        <h1 class="text-2xl font-bold neon-text">VYRO</h1>
+        <button onclick="toggleCart()" class="relative p-2 hover:bg-cyan-500/10 rounded-full">
+            <i class="fa-solid fa-cart-shopping text-xl text-cyan-400"></i>
+            <span id="cartBadge" class="cart-badge hidden">0</span>
+        </button>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="py-14 px-4 text-center">
+    <h2 class="text-3xl md:text-5xl font-bold mb-4">
+        <span class="neon-text">ELEVATE</span> YOUR
+        <span class="neon-pink-text">EVERYDAY</span>
+    </h2>
+    <p class="text-gray-400 max-w-md mx-auto text-lg">Premium essentials — built for the future</p>
+</section>
+
+<!-- Products -->
+<section class="max-w-7xl mx-auto px-4 pb-16">
+    <h3 class="text-2xl font-semibold mb-10 text-center neon-text">// COLLECTION</h3>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+
+<!-- 1. 3-in-1 Charging Stand — £34 -->
+<div class="neon-card rounded-xl overflow-hidden">
+    <div class="slideshow-container h-72" id="s1">
+        <img src="images/IMG_0176.jpg" class="slide active w-full h-full object-cover" alt="3-in-1 Charging Stand" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/00f0ff?text=3-in-1+Charger'">
+        <img src="images/IMG_0177.jpg" class="slide w-full h-full object-cover" alt="Charging Stand" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/b829ff?text=Charger+View+2'">
+        <img src="images/IMG_0178.jpg" class="slide w-full h-full object-cover" alt="Charging Stand" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/ff2e97?text=Charger+View+3'">
+        <button onclick="prevSlide(1)" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 w-8 h-8 rounded-full flex items-center justify-center text-cyan-400"><i class="fa-solid fa-chevron-left"></i></button>
+        <button onclick="nextSlide(1)" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 w-8 h-8 rounded-full flex items-center justify-center text-cyan-400"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    <div class="p-5">
+        <h4 class="text-lg font-semibold mb-2">3-in-1 Wireless Charging Stand</h4>
+        <p class="text-gray-400 text-sm mb-3">Powers phone, earbuds & watch at once. Fast wireless charging — sleek compact design.</p>
+        <p class="text-xl font-bold text-cyan-400 mb-4">£34.00</p>
+        <button onclick="addToCart('3-in-1 Wireless Charging Stand', 34.00)" class="w-full neon-btn text-white py-2.5 rounded-lg font-semibold">Add to Cart</button>
+    </div>
+</div>
+
+<!-- 2. Car Vacuum — £20 -->
+<div class="neon-card rounded-xl overflow-hidden">
+    <div class="slideshow-container h-72" id="s2">
+        <img src="images/IMG_0162.jpg" class="slide active w-full h-full object-cover" alt="Car Vacuum" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/00f0ff?text=Car+Vacuum'">
+        <img src="images/IMG_0163.jpg" class="slide w-full h-full object-cover" alt="Car Vacuum" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/b829ff?text=Vacuum+View+2'">
+        <img src="images/IMG_0165.jpg" class="slide w-full h-full object-cover" alt="Car Vacuum" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/ff2e97?text=Vacuum+View+3'">
+        <button onclick="prevSlide(2)" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 w-8 h-8 rounded-full flex items-center justify-center text-cyan-400"><i class="fa-solid fa-chevron-left"></i></button>
+        <button onclick="nextSlide(2)" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 w-8 h-8 rounded-full flex items-center justify-center text-cyan-400"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    <div class="p-5">
+        <h4 class="text-lg font-semibold mb-2">Portable Car Vacuum</h4>
+        <p class="text-gray-400 text-sm mb-3">High-power cordless handheld. Strong suction, lightweight, rechargeable battery.</p>
+        <p class="text-xl font-bold text-cyan-400 mb-4">£20.00</p>
+        <button onclick="addToCart('Portable Car Vacuum', 20.00)" class="w-full neon-btn text-white py-2.5 rounded-lg font-semibold">Add to Cart</button>
+    </div>
+</div>
+
+<!-- 3. Motion Sensor Light — £25 -->
+<div class="neon-card rounded-xl overflow-hidden">
+    <div class="slideshow-container h-72" id="s3">
+        <img src="images/IMG_0172.jpg" class="slide active w-full h-full object-cover" alt="Motion Sensor Light" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/00f0ff?text=Motion+Light'">
+        <img src="images/IMG_0169.jpg" class="slide w-full h-full object-cover" alt="Motion Sensor Light" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/b829ff?text=Motion+Light+View+2'">
+        <img src="images/IMG_0173.jpg" class="slide w-full h-full object-cover" alt="Motion Sensor Light" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/ff2e97?text=Motion+Light+View+3'">
+        <button onclick="prevSlide(3)" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 w-8 h-8 rounded-full flex items-center justify-center text-cyan-400"><i class="fa-solid fa-chevron-left"></i></button>
+        <button onclick="nextSlide(3)" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 w-8 h-8 rounded-full flex items-center justify-center text-cyan-400"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    <div class="p-5">
+        <h4 class="text-lg font-semibold mb-2">Motion Sensor LED Light</h4>
+        <p class="text-gray-400 text-sm mb-3">Auto-on when movement detected. Bright energy-efficient — no wiring needed.</p>
+        <p class="text-xl font-bold text-cyan-400 mb-4">£25.00</p>
+        <button onclick="addToCart('Motion Sensor LED Light', 25.00)" class="w-full neon-btn text-white py-2.5 rounded-lg font-semibold">Add to Cart</button>
+    </div>
+</div>
+
+<!-- 4. Selfie Stick -->
+<div class="neon-card rounded-xl overflow-hidden">
+    <div class="slideshow-container h-72" id="s4">
+        <img src="images/IMG_0083.jpg" class="slide active w-full h-full object-cover" alt="Selfie Stick" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/00f0ff?text=Selfie+Stick'">
+        <img src="images/IMG_0088.jpg" class="slide w-full h-full object-cover" alt="Selfie Stick" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/b829ff?text=Selfie+Stick+View+2'">
+        <img src="images/IMG_0089.jpg" class="slide w-full h-full object-cover" alt="Selfie Stick" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/ff2e97?text=Selfie+Stick+View+3'">
+        <button onclick="prevSlide(4)" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 w-8 h-8 rounded-full flex items-center justify-center text-cyan-400"><i class="fa-solid fa-chevron-left"></i></button>
+        <button onclick="nextSlide(4)" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 w-8 h-8 rounded-full flex items-center justify-center text-cyan-400"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    <div class="p-5">
+        <h4 class="text-lg font-semibold mb-2">Premium Selfie Stick Tripod</h4>
+        <p class="text-gray-400 text-sm mb-3">Extendable with built-in tripod & Bluetooth remote. 360° rotation — portable.</p>
+        <p class="text-xl font-bold text-cyan-400 mb-4">£24.99</p>
+        <button onclick="addToCart('Premium Selfie Stick Tripod', 24.99)" class="w-full neon-btn text-white py-2.5 rounded-lg font-semibold">Add to Cart</button>
+    </div>
+</div>
+
+<!-- 5. Ring Light — £15 -->
+<div class="neon-card rounded-xl overflow-hidden">
+    <div class="slideshow-container h-72" id="s5">
+        <img src="images/IMG_0182.jpg" class="slide active w-full h-full object-cover" alt="Ring Light" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/00f0ff?text=Ring+Light'">
+        <img src="images/IMG_0183.jpg" class="slide w-full h-full object-cover" alt="Ring Light" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/b829ff?text=Ring+Light+View+2'">
+        <img src="images/IMG_0185.jpg" class="slide w-full h-full object-cover" alt="Ring Light" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/ff2e97?text=Ring+Light+View+3'">
+        <button onclick="prevSlide(5)" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 w-8 h-8 rounded-full flex items-center justify-center text-cyan-400"><i class="fa-solid fa-chevron-left"></i></button>
+        <button onclick="nextSlide(5)" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 w-8 h-8 rounded-full flex items-center justify-center text-cyan-400"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    <div class="p-5">
+        <h4 class="text-lg font-semibold mb-2">Professional Ring Light — 10"</h4>
+        <p class="text-gray-400 text-sm mb-3">Studio lighting — adjustable brightness & colour. Phone holder included.</p>
+        <p class="text-xl font-bold text-cyan-400 mb-4">£15.00</p>
+        <button onclick="addToCart('Professional Ring Light 10\"', 15.00)" class="w-full neon-btn text-white py-2.5 rounded-lg font-semibold">Add to Cart</button>
+    </div>
+</div>
+
+<!-- 6. Cloud Light — £25 -->
+<div class="neon-card rounded-xl overflow-hidden">
+    <div class="slideshow-container h-72" id="s6">
+        <img src="images/IMG_0190.jpg" class="slide active w-full h-full object-cover" alt="Cloud Light" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/00f0ff?text=Cloud+Light'">
+        <img src="images/IMG_0192.jpg" class="slide w-full h-full object-cover" alt="Cloud Light" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/b829ff?text=Cloud+Light+View+2'">
+        <img src="images/IMG_0193.jpg" class="slide w-full h-full object-cover" alt="Cloud Light" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/ff2e97?text=Cloud+Light+View+3'">
+        <button onclick="prevSlide(6)" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 w-8 h-8 rounded-full flex items-center justify-center text-cyan-400"><i class="fa-solid fa-chevron-left"></i></button>
+        <button onclick="nextSlide(6)" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 w-8 h-8 rounded-full flex items-center justify-center text-cyan-400"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    <div class="p-5">
+        <h4 class="text-lg font-semibold mb-2">Cloud LED Night Light</h4>
+        <p class="text-gray-400 text-sm mb-3">Dreamy colour-changing glow. USB powered with remote — perfect decor.</p>
+        <p class="text-xl font-bold text-cyan-400 mb-4">£25.00</p>
+        <button onclick="addToCart('Cloud LED Night Light', 25.00)" class="w-full neon-btn text-white py-2.5 rounded-lg font-semibold">Add to Cart</button>
+    </div>
+</div>
+
+<!-- 7. Multi Stand -->
+<div class="neon-card rounded-xl overflow-hidden">
+    <div class="slideshow-container h-72" id="s7">
+        <img src="images/IMG_0177.jpg" class="slide active w-full h-full object-cover" alt="Device Stand" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/00f0ff?text=Device+Stand'">
+        <img src="images/IMG_0178.jpg" class="slide w-full h-full object-cover" alt="Device Stand" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/b829ff?text=Stand+View+2'">
+        <button onclick="prevSlide(7)" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 w-8 h-8 rounded-full flex items-center justify-center text-cyan-400"><i class="fa-solid fa-chevron-left"></i></button>
+        <button onclick="nextSlide(7)" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 w-8 h-8 rounded-full flex items-center justify-center text-cyan-400"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    <div class="p-5">
+        <h4 class="text-lg font-semibold mb-2">Adjustable Multi-Device Stand</h4>
+        <p class="text-gray-400 text-sm mb-3">Sturdy holder for phone/tablet. Foldable, adjustable angle — travel-friendly.</p>
+        <p class="text-xl font-bold text-cyan-400 mb-4">£24.99</p>
+        <button onclick="addToCart('Adjustable Multi-Device Stand', 24.99)" class="w-full neon-btn text-white py-2.5 rounded-lg font-semibold">Add to Cart</button>
+    </div>
+</div>
+
+<!-- 8. Creator Bundle -->
+<div class="neon-card rounded-xl overflow-hidden">
+    <div class="slideshow-container h-72" id="s8">
+        <img src="images/IMG_0169.jpg" class="slide active w-full h-full object-cover" alt="Creator Bundle" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/00f0ff?text=Creator+Bundle'">
+        <img src="images/IMG_0172.jpg" class="slide w-full h-full object-cover" alt="Creator Bundle" onerror="this.src='https://via.placeholder.com/400x300/0f0f1a/b829ff?text=Bundle+View+2'">
+        <button onclick="prevSlide(8)" class="absolute left-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 w-8 h-8 rounded-full flex items-center justify-center text-cyan-400"><i class="fa-solid fa-chevron-left"></i></button>
+        <button onclick="nextSlide(8)" class="absolute right-3 top-1/2 -translate-y-1/2 bg-black/50 hover:bg-black/80 w-8 h-8 rounded-full flex items-center justify-center text-cyan-400"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    <div class="p-5">
+        <h4 class="text-lg font-semibold mb-2">Creator Essentials Bundle</h4>
+        <p class="text-gray-400 text-sm mb-3">Complete lighting & mounting kit. Premium accessories — all-in-one package.</p>
+        <p class="text-xl font-bold text-cyan-400 mb-4">£39.99</p>
+        <button onclick="addToCart('Creator Essentials Bundle', 39.99)" class="w-full neon-btn text-white py-2.5 rounded-lg font-semibold">Add to Cart</button>
+    </div>
+</div>
+
+    </div>
+</section>
+
+<!-- Cart Sidebar -->
+<div id="cartOverlay" class="fixed inset-0 bg-black/70 z-50 hidden" onclick="toggleCart()"></div>
+<div id="cartPanel" class="fixed top-0 right-0 h-full w-full max-w-md bg-gray-900 z-50 border-l border-cyan-500/20 transform translate-x-full transition-transform duration-300">
+    <div class="h-full flex flex-col">
+        <div class="p-5 border-b border-cyan-500/20 flex justify-between items-center">
+            <h3 class="text-xl font-semibold neon-text">// CART</h3>
+            <button onclick="toggleCart()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+        </div>
+        <div id="cartItems" class="flex-1 overflow-y-auto p-5">
+            <p class="text-gray-500 text-center py-10">Your cart is empty</p>
+        </div>
+        <div class="p-5 border-t border-cyan-500/20">
+            <div class="flex justify-between text-lg font-semibold mb-4">
+                <span>Total</span>
+                <span id="cartTotal" class="text-cyan-400">£0.00</span>
+            </div>
+            <button onclick="showCheckout()" class="w-full neon-btn-pink text-white py-3 rounded-lg font-semibold">Proceed to Checkout</button>
+        </div>
+    </div>
+</div>
+
+<!-- Checkout Modal -->
+<div id="checkoutOverlay" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+    <div class="w-full max-w-lg bg-gray-900 rounded-xl border border-cyan-500/30 p-6 max-h-[90vh] overflow-y-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h3 class="text-xl font-semibold neon-pink-text">// CHECKOUT</h3>
+            <button onclick="hideCheckout()" class="text-gray-400 hover:text-white text-xl">&times;</button>
+        </div>
+        
+        <div class="mb-6">
+            <h4 class="text-sm text-gray-400 mb-3">SELECT PAYMENT METHOD</h4>
+            <div class="grid grid-cols-2 gap-3">
+                <div class="payment-option selected" data-method="card" onclick="selectPayment('card')">
+                    <i class="fa-solid fa-credit-card mr-2 text-cyan-400"></i> Card
+                </div>
+                <div class="payment-option" data-method="paypal" onclick="selectPayment('paypal')">
+                    <i class="fa-brands fa-paypal mr-2 text-blue-400"></i> PayPal
+                </div>
+                <div class="payment-option" data-method="apple" onclick="selectPayment('apple')">
+                    <i class="fa-brands fa-apple mr-2"></i> Apple Pay
+                </div>
+                <div class="payment-option" data-method="google" onclick="selectPayment('google')">
+                    <i class="fa-brands fa-google mr-2 text-yellow-400"></i> Google Pay
+                </div>
+                <div class="payment-option col-span-2" data-method="klarna" onclick="selectPayment('klarna')">
+                    <i class="fa-solid fa-bag-shopping mr-2 text-pink-400"></i> Klarna — Pay Later
+                </div>
+            </div>
+        </div>
+        
+        <div class="space-y-4 mb-6">
+            <h4 class="text-sm text-gray-400">SHIPPING DETAILS</h4>
+            <input type="text" placeholder="Full Name" class="w-full">
+            <input type="email" placeholder="Email Address" class="w-full">
+            <input type="text" placeholder="Street Address" class="w-full">
+            <div class="grid grid-cols-2 gap-3">
+                <input type="text" placeholder="City" class="w-full">
+                <input type="text" placeholder="Postcode" class="w-full">
+            </div>
+            <div id="cardFields">
+                <h4 class="text-sm text-gray-400 mt-4 mb-2">CARD DETAILS</h4>
+                <input type="text" placeholder="Card Number" class="w-full mb-3">
+                <div class="grid grid-cols-2 gap-3">
+                    <input type="text" placeholder="MM / YY" class="w-full">
+                    <input type="text" placeholder="CVV" class="w-full">
+                </div>
+            </div>
+        </div>
+        
+        <div class="border-t border-cyan-500/20 pt-4 mb-4">
+            <div class="flex justify-between text-lg font-bold">
+                <span>Total</span>
+                <span id="checkoutTotal" class="text-pink-400">£0.00</span>
+            </div>
+        </div>
+        
+        <button onclick="placeOrder()" class="w-full neon-btn-pink text-white py-3 rounded-lg font-semibold text-lg">...
